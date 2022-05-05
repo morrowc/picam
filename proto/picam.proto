@@ -1,0 +1,25 @@
+//
+// Proto definition for picam client/server interactions.
+
+syntax = "proto3";
+package picam.proto;
+
+option go_package = "github.com/morrowc/picam/proto/picam";
+
+// PiCam service exposes an interface to send an image
+// from the client to the server.
+service PiCam {
+  // SendImage, sends an image from the client to the server.
+  rpc SendImage (Request) returns (Response);
+}
+
+// Request contains the image, and identifier.
+message Request {
+  string identifier = 1;
+  bytes image = 2;
+}
+
+// Response returns only an error if one occurred.
+message Response {
+  string error = 1;
+}
