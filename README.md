@@ -11,10 +11,10 @@ Logitech QuickCam Pro is 960 x 720.
 
 Software to install includes:
 
-   * (golang)[https://golang.org]
-   * (go4vl)[https://github.com/vladimirvivien/go4vl]
+   * [golang](https://golang.org)
+   * [go4vl](https://github.com/vladimirvivien/go4vl)
 
 Hardware required:
 
-   * (raspberry pi)[https://www.raspberrypi.org] - Tested on at least pi4.
-   * (usb webcam)[https://amzn.com/dp/B00006LIOM] - Tested, but probably any usb cam.
+   * [raspberry pi](https://www.raspberrypi.org) - Tested on at least pi4.
+   * [usb webcam](https://amzn.com/dp/B00006LIOM) - Tested, but probably any usb cam.
