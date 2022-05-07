@@ -1,4 +1,6 @@
-package server
+// Package client builds a web-cam image capture client
+// to speak to the remote picam server.
+package client
 
 import (
 	"fmt"
@@ -6,7 +8,7 @@ import (
 	"github.com/vladimirvivien/go4vl/v4l2/device"
 )
 
-type Server struct {
+type Client struct {
 	dev *device.Device
 	id  string
 }
