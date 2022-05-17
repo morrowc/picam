@@ -3,48 +3,29 @@
 package client
 
 import (
-	"context"
 	"fmt"
 
-	"github.com/vladimirvivien/go4vl/v4l2"
-	"github.com/vladimirvivien/go4vl/v4l2/device"
+	"github.com/gidoBOSSftw5731/log"
 	"google.golang.org/grpc"
+
+	pgpb "github.com/morrowc/picam/proto/picam"
 )
 
 const (
 	maxMsgSize = 1024 * 1000 * 10 // 10mB
-	format     = v4l2.PixelFmtMJPEG
 )
 
 // Client holds all of the information about the running client.
 type Client struct {
-	dev      *device.Device
-	conn     *grpc.ClientConn
+	client   *pgpb.PiCamClient
 	id       string
-	h        int
-	w        int
 	srvAddr  string
+	store    string
+	files    chan string
 	imgCount int64
 }
 
-func New(dev, srvAddr, id, string, h, w int) (Server, error) {
-	d, err := device.Open(dev)
-	if err != nil {
-		return nil, fmt.Errorf("failed to open device: %v", err)
-	}
-
-	return &Server{
-		dev:      d,
-		conn:     nil,
-		id:       id,
-		h:        h,
-		w:        w,
-		srvAddr:  srvAddr,
-		imgCount: 0,
-	}
-}
-
-func (c *Client) newConn(ctx context.Context) error {
+func New(dev, srvAddr, id, store string) (Server, error) {
 	conn, err := grpc.Dial(
 		c.srvAddr,
 		grpc.WithInsecure(),
@@ -53,8 +34,46 @@ func (c *Client) newConn(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to make new connection: %v", err)
 	}
-	c.conn = conn
+
+	return &Server{
+		client:   pgpb.NewPiCamClient(conn),
+		id:       id,
+		srvAddr:  srvAddr,
+		store:    store,
+		files:    make(chan string, 10),
+		imgCount: 0,
+	}
+}
+
+// Watcher starts a watch process on the store, sending write events to the channel.
+func (c *Client) Watcher() error {
+	w, err := fsnotify.NewWatcher()
+	if err != nil {
+		return fmt.Errorf("Error creating the file watcher: %v", err)
+	}
+
+	go func() {
+		for {
+			select {
+			case event, ok := <-w.Events:
+				if !ok {
+					return
+				}
+				if event.Op&fsnotify.Create == fsnotify.Create {
+					c.files <- event.Name
+				}
+			case err, ok := <-w.Errors:
+				if !ok {
+					return
+				}
+				log.Infof("error: %v", err)
+			}
+		}
+	}()
 	return nil
 }
 
-// func (c *Client) Setup
+// SendImage, Send an image to the remote server.
+func (c *Client) SendImage(img []byte) error {
+
+}
