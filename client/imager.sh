@@ -16,7 +16,7 @@ fi
 # Loop 3 times with 15 seconds break at each loop.
 for d in 1 2 3; do
   NAME=$(date '+capture-%Y-%M-%d-%H-%m-%S.jpg')
-  ${CAM} -n -o ${NAME} >> /tmp/capture.log 2>&1
+  ${CAM} -n -o ${STORAGE}/${NAME} >> /tmp/capture.log 2>&1
   sleep 15
 done
 
