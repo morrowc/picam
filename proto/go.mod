@@ -1,4 +1,4 @@
-module github.com/morrowc/picam/proto
+module github.com/morrowc/picam/proto/picam
 
 go 1.14
 
