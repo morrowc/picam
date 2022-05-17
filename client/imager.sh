@@ -9,7 +9,7 @@ STORAGE=/tmp/camstore
 NAME=$(date '+capture-%Y-%M-%d-%H-%m-%S.jpg')
 CAM=/usr/bin/libcamera-still
 
-if [ ! -d ${STORAGE} }; then
+if [ ! -d ${STORAGE} ] ; then
 	mkdir -p ${STORAGE}
 fi
 
