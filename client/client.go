@@ -24,7 +24,7 @@ type Client struct {
 	srvAddr  string
 	store    string
 	files    chan string
-	imgCount int64
+	ImgCount int64
 }
 
 func New(srvAddr, id, store string) (Server, error) {
@@ -43,7 +43,7 @@ func New(srvAddr, id, store string) (Server, error) {
 		srvAddr:  srvAddr,
 		store:    store,
 		files:    make(chan string, 10),
-		imgCount: 0,
+		ImgCount: 0,
 	}
 }
 
@@ -87,6 +87,7 @@ func (c *Client) SendImage(ctx context.Context, img []byte) error {
 	if err != nil {
 		return fmt.Errorf("failed to send image: %v - ", err, resp.GetError())
 	}
-	log.Infof("Successfully uploaded image.")
+	c.ImgCount++
+	log.Infof("Successfully uploaded image, now %d sent.", c.ImgCount)
 	return nil
 }
