@@ -27,7 +27,7 @@ type Client struct {
 	imgCount int64
 }
 
-func New(dev, srvAddr, id, store string) (Server, error) {
+func New(srvAddr, id, store string) (Server, error) {
 	conn, err := grpc.Dial(
 		c.srvAddr,
 		grpc.WithInsecure(),
