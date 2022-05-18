@@ -6,8 +6,9 @@ import (
 	"context"
 	"flag"
 	"log"
-	"server/client"
 	"sync"
+
+	"github.com/morrowc/picam/client/client"
 )
 
 var (

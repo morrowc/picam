@@ -14,3 +14,4 @@ require (
 )
 
 replace github.com/morrowc/picam/proto/picam => ./proto
+replace github.com/morrowc/picam/client/client => ./client
