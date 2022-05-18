@@ -3,10 +3,12 @@
 package client
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/gidoBOSSftw5731/log"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 
 	pgpb "github.com/morrowc/picam/proto/picam"
 )
@@ -35,7 +37,7 @@ func New(dev, srvAddr, id, store string) (Server, error) {
 		return fmt.Errorf("failed to make new connection: %v", err)
 	}
 
-	return &Server{
+	return &Client{
 		client:   pgpb.NewPiCamClient(conn),
 		id:       id,
 		srvAddr:  srvAddr,
@@ -74,6 +76,17 @@ func (c *Client) Watcher() error {
 }
 
 // SendImage, Send an image to the remote server.
-func (c *Client) SendImage(img []byte) error {
+func (c *Client) SendImage(ctx context.Context, img []byte) error {
+	// Build a request and send it to the server.
+	req := &pgpb.Request{
+		Identifier: proto.String(c.id),
+		Image:      img,
+	}
 
+	resp, err := c.client.SendImage(ctx, req)
+	if err != nil {
+		return fmt.Errorf("failed to send image: %v - ", err, resp.GetError())
+	}
+	log.Infof("Successfully uploaded image.")
+	return nil
 }
