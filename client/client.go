@@ -55,7 +55,7 @@ func (c *Client) Watcher() error {
 	}
 	// Close the watcher and the channel of files when this function returns.
 	defer w.Close()
-	defer c.Files.Close()
+	defer close(c.Files)
 
 	go func() {
 		for {
@@ -86,7 +86,7 @@ func (c *Client) Watcher() error {
 func (c *Client) SendImage(ctx context.Context, img []byte) error {
 	// Build a request and send it to the server.
 	req := &pgpb.Request{
-		Identifier: c.id,
+		Identifier: c.Id,
 		Image:      img,
 	}
 
