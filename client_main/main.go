@@ -6,6 +6,7 @@ import (
 	"context"
 	"flag"
 	"log"
+	"os"
 	"sync"
 
 	"github.com/morrowc/picam/client/client"
@@ -34,7 +35,7 @@ func main() {
 
 	// Start a simple waitgroup to watch/wait on the image sending
 	// loop to return, and allow the program to exit.
-	wg := sync.WaitGroup()
+	var wg sync.WaitGroup
 
 	wg.Add(1)
 	// Run a goroutine to just loop watching for images to send.
@@ -42,23 +43,19 @@ func main() {
 		defer wg.Done()
 		ctx := context.Background()
 		for {
-			fn := <-c.files
+			fn := <-c.Files
 			img, err := os.ReadFile(fn)
 			if err != nil {
 				log.Errorf("failed to read the stored image file(%s): %v", fn, err)
 				return
 			}
-			/*
-			 * Just log the name and size of the file for now.
-			 */
 			log.Infof("Extracted file: %v which is %d bytes in size.", fn, len(img))
-			/*
 
-				if err := c.SendImage(ctx, img); err != nil {
-					log.Errorf("failed to send image: %v", err)
-					return
-				}
-			*/
+			continue
+			if err := c.SendImage(ctx, img); err != nil {
+				log.Errorf("failed to send image: %v", err)
+				return
+			}
 		}
 	}()
 	wg.Wait()
