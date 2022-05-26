@@ -48,10 +48,17 @@ func main() {
 				log.Errorf("failed to read the stored image file(%s): %v", fn, err)
 				return
 			}
-			if err := c.SendImage(ctx, img); err != nil {
-				log.Errorf("failed to send image: %v", err)
-				return
-			}
+			/*
+			 * Just log the name and size of the file for now.
+			 */
+			log.Infof("Extracted file: %v which is %d bytes in size.", fn, len(img))
+			/*
+
+				if err := c.SendImage(ctx, img); err != nil {
+					log.Errorf("failed to send image: %v", err)
+					return
+				}
+			*/
 		}
 	}()
 	wg.Wait()
