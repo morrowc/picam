@@ -1,42 +1,37 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 
-	"github.com/fsnotify/fsnotify"
+	"github.com/morrowc/picam/client/client"
+)
+
+var (
+	sAddr = flag.String("server_address", "127.0.0.1:443", "Remote image collection server address:port")
+	id    = flag.String("id", "", "Identifier used for this image sender.")
+	store = flag.String("store", "", "Directory where camera images are stored.")
 )
 
 func main() {
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer watcher.Close()
+	flag.Parse()
 
-	done := make(chan bool)
+	if *id == "" || *store == "" {
+		fmt.Println("Provide an identifier and storage directory.")
+		return
+	}
+
+	c, err := client.New(*sAddr, *id, *store)
+	if err != nil {
+		log.Fatalf("failed to create new picam client: %v", err)
+	}
+
+	// Start the watcher, and then monitor the channel.
+	go c.Watcher()
 	go func() {
-		for {
-			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					return
-				}
-				log.Println("event:", event)
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					log.Println("modified file:", event.Name)
-				}
-			case err, ok := <-watcher.Errors:
-				if !ok {
-					return
-				}
-				log.Println("error:", err)
-			}
+		for fn := range c.Files {
+			fmt.Printf("Watcher found a new file: %v\n", fn)
 		}
 	}()
-
-	err = watcher.Add("/tmp/foo")
-	if err != nil {
-		log.Fatal(err)
-	}
-	<-done
 }
