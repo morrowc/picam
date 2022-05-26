@@ -8,7 +8,6 @@ import (
 
 	"github.com/gidoBOSSftw5731/log"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
 
 	pgpb "github.com/morrowc/picam/proto/picam"
 )
@@ -27,14 +26,14 @@ type Client struct {
 	ImgCount int64
 }
 
-func New(srvAddr, id, store string) (Server, error) {
+func New(srvAddr, id, store string) (*Client, error) {
 	conn, err := grpc.Dial(
-		c.srvAddr,
+		srvAddr,
 		grpc.WithInsecure(),
 		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(maxMsgSize)),
 	)
 	if err != nil {
-		return fmt.Errorf("failed to make new connection: %v", err)
+		return nil, fmt.Errorf("failed to make new connection: %v", err)
 	}
 
 	return &Client{
@@ -44,7 +43,7 @@ func New(srvAddr, id, store string) (Server, error) {
 		store:    store,
 		files:    make(chan string, 10),
 		ImgCount: 0,
-	}
+	}, nil
 }
 
 // Watcher starts a watch process on the store, sending write events to the channel.
@@ -79,7 +78,7 @@ func (c *Client) Watcher() error {
 func (c *Client) SendImage(ctx context.Context, img []byte) error {
 	// Build a request and send it to the server.
 	req := &pgpb.Request{
-		Identifier: proto.String(c.id),
+		Identifier: c.id,
 		Image:      img,
 	}
 
