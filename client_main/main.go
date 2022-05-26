@@ -5,9 +5,10 @@ package main
 import (
 	"context"
 	"flag"
-	"log"
 	"os"
 	"sync"
+
+	"github.com/gidoBOSSftw5731/log"
 
 	"github.com/morrowc/picam/client/client"
 )
