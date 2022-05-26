@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/fsnotify/fsnotify"
 	"github.com/gidoBOSSftw5731/log"
 	"google.golang.org/grpc"
 
@@ -18,7 +19,7 @@ const (
 
 // Client holds all of the information about the running client.
 type Client struct {
-	client   *pgpb.PiCamClient
+	client   pgpb.PiCamClient
 	id       string
 	srvAddr  string
 	store    string
