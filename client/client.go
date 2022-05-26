@@ -20,10 +20,10 @@ const (
 // Client holds all of the information about the running client.
 type Client struct {
 	client   pgpb.PiCamClient
-	id       string
+	Id       string
 	srvAddr  string
 	store    string
-	files    chan string
+	Files    chan string
 	ImgCount int64
 }
 
@@ -39,10 +39,10 @@ func New(srvAddr, id, store string) (*Client, error) {
 
 	return &Client{
 		client:   pgpb.NewPiCamClient(conn),
-		id:       id,
+		Id:       id,
 		srvAddr:  srvAddr,
 		store:    store,
-		files:    make(chan string, 10),
+		Files:    make(chan string, 10),
 		ImgCount: 0,
 	}, nil
 }
@@ -53,6 +53,9 @@ func (c *Client) Watcher() error {
 	if err != nil {
 		return fmt.Errorf("Error creating the file watcher: %v", err)
 	}
+	// Close the watcher and the channel of files when this function returns.
+	defer w.Close()
+	defer c.Files.Close()
 
 	go func() {
 		for {
@@ -62,7 +65,7 @@ func (c *Client) Watcher() error {
 					return
 				}
 				if event.Op&fsnotify.Create == fsnotify.Create {
-					c.files <- event.Name
+					c.Files <- event.Name
 				}
 			case err, ok := <-w.Errors:
 				if !ok {
@@ -72,6 +75,10 @@ func (c *Client) Watcher() error {
 			}
 		}
 	}()
+
+	if err := w.Add(c.store); err != nil {
+		return fmt.Errorf("failed to add the filestore to watch: %v", err)
+	}
 	return nil
 }
 
