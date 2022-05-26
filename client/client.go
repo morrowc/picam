@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/gidoBOSSftw5731/log"
+	"github.com/golang/glog"
 	"google.golang.org/grpc"
 
 	pgpb "github.com/morrowc/picam/proto/picam"
@@ -71,7 +71,7 @@ func (c *Client) Watcher() error {
 				if !ok {
 					return
 				}
-				log.Infof("error: %v", err)
+				glog.Infof("error: %v", err)
 			}
 		}
 	}()
@@ -95,6 +95,6 @@ func (c *Client) SendImage(ctx context.Context, img []byte) error {
 		return fmt.Errorf("failed to send image: %v - ", err, resp.GetError())
 	}
 	c.ImgCount++
-	log.Infof("Successfully uploaded image, now %d sent.", c.ImgCount)
+	glog.Infof("Successfully uploaded image, now %d sent.", c.ImgCount)
 	return nil
 }

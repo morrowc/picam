@@ -8,7 +8,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/gidoBOSSftw5731/log"
+	"github.com/golang/glog"
 
 	"github.com/morrowc/picam/client/client"
 )
@@ -22,16 +22,16 @@ var (
 func main() {
 	flag.Parse()
 	if *id == "" || *server == "" {
-		log.Fatal("Failed to provide ID or SERVER flag values.")
+		glog.Fatal("Failed to provide ID or SERVER flag values.")
 	}
 
 	// Create a client service, start fswatching the store directory.
 	c, err := client.New(*server, *id, *store)
 	if err != nil {
-		log.Fatalf("failed to create client service: %v", err)
+		glog.Fatalf("failed to create client service: %v", err)
 	}
 	if err := c.Watcher(); err != nil {
-		log.Fatalf("failed to start the fsnotify watcher: %v", err)
+		glog.Fatalf("failed to start the fsnotify watcher: %v", err)
 	}
 
 	// Start a simple waitgroup to watch/wait on the image sending
@@ -47,20 +47,20 @@ func main() {
 			fn := <-c.Files
 			img, err := os.ReadFile(fn)
 			if err != nil {
-				log.Errorf("failed to read the stored image file(%s): %v", fn, err)
+				glog.Errorf("failed to read the stored image file(%s): %v", fn, err)
 				return
 			}
-			log.Infof("Extracted file: %v which is %d bytes in size.", fn, len(img))
+			glog.Infof("Extracted file: %v which is %d bytes in size.", fn, len(img))
 
 			continue
 			if err := c.SendImage(ctx, img); err != nil {
-				log.Errorf("failed to send image: %v", err)
+				glog.Errorf("failed to send image: %v", err)
 				return
 			}
 		}
 	}()
 	wg.Wait()
 
-	log.Infof("Finished waiting for images, send: %d images.", c.ImgCount)
+	glog.Infof("Finished waiting for images, send: %d images.", c.ImgCount)
 
 }
