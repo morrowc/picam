@@ -23,3 +23,16 @@ message Request {
 message Response {
   string error = 1;
 }
+
+// Config defines the server side configuration.
+message Config {
+  integer port = 1;
+  repeated Client = 2;
+}
+
+// Client defines the unique mapping between client identifier
+// and storage location on server for image files.
+message Client {
+  string id = 1;
+  string store = 2;
+}
