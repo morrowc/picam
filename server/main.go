@@ -4,9 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"net"
 	"os"
+	"sync"
 
 	"github.com/golang/glog"
 	pb "github.com/morrowc/picam/proto/picam"
@@ -20,24 +20,23 @@ const (
 )
 
 var (
-	port   = flag.Int("port", 9987, "Port upon which to listen.")
-	store  = flag.String("store", "/tmp/camstore", "Storage location for image files.")
 	config = flag.String("config", "", "Configuration for the server.")
 )
 
 // server holds connection/client information necessary to operate a gRPC server.
 type server struct {
-	store  string
-	port   int
-	config *pb.Config
+	port   int32             // port upon which to listen.
+	config *pb.Config        // configuration content for server.
+	stores map[string]string // id -> store.
 	pb.UnimplementedPiCamServer
+	mu sync.Mutex
 }
 
-func new(store string, port int, config *pb.Config) *server {
+func new(config *pb.Config) *server {
 	return &server{
-		store:  store,
-		port:   port,
+		port:   config.GetPort(),
 		config: config,
+		stores: make(map[string]string),
 	}
 }
 
@@ -64,30 +63,43 @@ func readConfig(fn string) (*pb.Config, error) {
 func main() {
 	flag.Parse()
 	if *config == "" {
-		log.Fatalf("Provide a config path.")
+		glog.Fatalf("Provide a config path.")
 	}
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
+	config, err := readConfig(*config)
+	server := new(config)
+
+	// Create the port listener.
+	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", config.GetPort()))
 	if err != nil {
 		glog.Fatalf("failed to listen(): %v", err)
 	}
 
+	// Set some basic gRPC server options (file size for snd/recv).
 	s := grpc.NewServer(
 		grpc.MaxMsgSize(maxMsgSize),
 		grpc.MaxRecvMsgSize(maxMsgSize),
 		grpc.MaxSendMsgSize(maxMsgSize),
 	)
-	config, err := readConfig(*config)
-	server := new(*store, *port, config)
+
 	fmt.Printf("Will listen on port: %d\n", server.config.GetPort())
 	for _, client := range server.config.GetClient() {
+		id := client.GetId()
+		dir := client.GetStore()
+		if _, err := os.Stat(dir); os.IsNotExist(err) {
+			glog.Fatalf("store: %s does not exist: %v", dir, err)
+		}
 		fmt.Printf("Id: %s store: %s\n", client.GetId(), client.GetStore())
+		server.mu.Lock()
+		server.stores[id] = dir
+		server.mu.Unlock()
 	}
 
 	pb.RegisterPiCamServer(s, server)
-
 	reflection.Register(s)
+
+	glog.Info("Ready to start serving.")
 	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to listen&serve: %v", err)
+		glog.Fatalf("failed to listen&serve: %v", err)
 	}
 
 }
