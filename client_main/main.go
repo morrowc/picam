@@ -54,6 +54,8 @@ func main() {
 				time.Sleep(2 * time.Second)
 				continue
 			}
+			// Delay a second to let file writes finish.
+			time.Sleep(1 * time.Second)
 			img, err := os.ReadFile(fn)
 			if err != nil {
 				glog.Errorf("failed to read the stored image file(%s): %v", fn, err)
