@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/gidoBOSSftw5731/log"
 	"github.com/golang/glog"
 	"google.golang.org/grpc"
 
@@ -57,28 +58,35 @@ func (c *Client) Watcher() error {
 	defer w.Close()
 	defer close(c.Files)
 
+	// Add the store directory to watch for events.
+	if err := w.Add(c.store); err != nil {
+		return fmt.Errorf("failed to add the filestore to watch: %v", err)
+	}
+
+	// Start a watching goroutine.
 	go func() {
 		for {
 			select {
 			case event, ok := <-w.Events:
 				if !ok {
+					glog.Infof("An unknown event(%s) occured in fsNotify", event)
 					return
 				}
+				log.Infof("Event type (%s) for (%s)", event.Op, event.Name)
 				if event.Op&fsnotify.Create == fsnotify.Create {
+					glog.Infof("A create event happened for file: %v", event.Name)
 					c.Files <- event.Name
 				}
 			case err, ok := <-w.Errors:
 				if !ok {
+					glog.Info("not-ok error")
 					return
 				}
-				glog.Infof("error: %v", err)
+				glog.Infof("fsNotify error: %v", err)
 			}
 		}
 	}()
 
-	if err := w.Add(c.store); err != nil {
-		return fmt.Errorf("failed to add the filestore to watch: %v", err)
-	}
 	return nil
 }
 

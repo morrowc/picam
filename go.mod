@@ -13,6 +13,7 @@ require (
 
 require (
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
+	github.com/gidoBOSSftw5731/log v0.0.0-20210527210830-1611311b4b64 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/morrowc/picam/proto/picam v0.0.0-00010101000000-000000000000 // indirect
 	golang.org/x/net v0.0.0-20220516155154-20f960328961 // indirect

@@ -45,6 +45,9 @@ func main() {
 		ctx := context.Background()
 		for {
 			fn := <-c.Files
+			if fn == "" {
+				continue
+			}
 			img, err := os.ReadFile(fn)
 			if err != nil {
 				glog.Errorf("failed to read the stored image file(%s): %v", fn, err)
