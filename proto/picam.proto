@@ -27,7 +27,7 @@ message Response {
 // Config defines the server side configuration.
 message Config {
   integer port = 1;
-  repeated Client = 2;
+  repeated Client client = 2;
 }
 
 // Client defines the unique mapping between client identifier
