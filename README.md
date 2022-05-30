@@ -5,7 +5,8 @@ Raspberry Pi Camera image collector and processing server
 
 Collect images from a pi-camera on the pi, send those images
 to a remote server for storage. Maximum resolution for a
-Logitech QuickCam Pro is 800 x 600.
+Logitech QuickCam Pro is 800 x 600, the camera used, however,
+is not limited to the QuickCam Pro.
 
 # Dependencies
 
