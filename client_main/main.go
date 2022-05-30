@@ -7,6 +7,7 @@ import (
 	"flag"
 	"os"
 	"sync"
+	"time"
 
 	"github.com/golang/glog"
 
@@ -30,9 +31,13 @@ func main() {
 	if err != nil {
 		glog.Fatalf("failed to create client service: %v", err)
 	}
-	if err := c.Watcher(); err != nil {
-		glog.Fatalf("failed to start the fsnotify watcher: %v", err)
-	}
+	go func() error {
+		if err := c.Watcher(); err != nil {
+			glog.Fatalf("failed to start the fsnotify watcher: %v", err)
+			return err
+		}
+		return nil
+	}()
 
 	// Start a simple waitgroup to watch/wait on the image sending
 	// loop to return, and allow the program to exit.
@@ -46,6 +51,7 @@ func main() {
 		for {
 			fn := <-c.Files
 			if fn == "" {
+				time.Sleep(2 * time.Second)
 				continue
 			}
 			img, err := os.ReadFile(fn)
@@ -54,11 +60,9 @@ func main() {
 				return
 			}
 			glog.Infof("Extracted file: %v which is %d bytes in size.", fn, len(img))
-
-			continue
 			if err := c.SendImage(ctx, img); err != nil {
 				glog.Errorf("failed to send image: %v", err)
-				return
+				// return
 			}
 		}
 	}()

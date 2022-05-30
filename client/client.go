@@ -5,10 +5,10 @@ package client
 import (
 	"context"
 	"fmt"
+	"time"
 
-	"github.com/fsnotify/fsnotify"
-	"github.com/gidoBOSSftw5731/log"
 	"github.com/golang/glog"
+	"github.com/rjeczalik/notify"
 	"google.golang.org/grpc"
 
 	pgpb "github.com/morrowc/picam/proto/picam"
@@ -43,49 +43,35 @@ func New(srvAddr, id, store string) (*Client, error) {
 		Id:       id,
 		srvAddr:  srvAddr,
 		store:    store,
-		Files:    make(chan string, 10),
+		Files:    make(chan string, 1),
 		ImgCount: 0,
 	}, nil
 }
 
 // Watcher starts a watch process on the store, sending write events to the channel.
 func (c *Client) Watcher() error {
-	w, err := fsnotify.NewWatcher()
-	if err != nil {
+	e := make(chan notify.EventInfo, 1)
+	glog.Infof("Watcher starting for: %s", c.store)
+	if err := notify.Watch(c.store, e, notify.InCreate, notify.InMovedTo); err != nil {
 		return fmt.Errorf("Error creating the file watcher: %v", err)
 	}
 	// Close the watcher and the channel of files when this function returns.
-	defer w.Close()
-	defer close(c.Files)
-
-	// Add the store directory to watch for events.
-	if err := w.Add(c.store); err != nil {
-		return fmt.Errorf("failed to add the filestore to watch: %v", err)
-	}
+	defer notify.Stop(e)
+	defer close(e)
 
 	// Start a watching goroutine.
-	go func() {
-		for {
-			select {
-			case event, ok := <-w.Events:
-				if !ok {
-					glog.Infof("An unknown event(%s) occured in fsNotify", event)
-					return
-				}
-				log.Infof("Event type (%s) for (%s)", event.Op, event.Name)
-				if event.Op&fsnotify.Create == fsnotify.Create {
-					glog.Infof("A create event happened for file: %v", event.Name)
-					c.Files <- event.Name
-				}
-			case err, ok := <-w.Errors:
-				if !ok {
-					glog.Info("not-ok error")
-					return
-				}
-				glog.Infof("fsNotify error: %v", err)
-			}
+	for {
+		glog.Info("Looping on events")
+		switch ei := <-e; ei.Event() {
+		case notify.InCreate:
+			c.Files <- ei.Path()
+			glog.Infof("Create event for path: %s", ei.Path())
+		case notify.InMovedTo:
+			c.Files <- ei.Path()
+			glog.Infof("InMovedTo event for path: %s", ei.Path())
 		}
-	}()
+		time.Sleep(1 * time.Second)
+	}
 
 	return nil
 }
@@ -100,7 +86,7 @@ func (c *Client) SendImage(ctx context.Context, img []byte) error {
 
 	resp, err := c.client.SendImage(ctx, req)
 	if err != nil {
-		return fmt.Errorf("failed to send image: %v - ", err, resp.GetError())
+		return fmt.Errorf("failed to send image: %v - %v", err, resp.GetError())
 	}
 	c.ImgCount++
 	glog.Infof("Successfully uploaded image, now %d sent.", c.ImgCount)

@@ -16,6 +16,7 @@ require (
 	github.com/gidoBOSSftw5731/log v0.0.0-20210527210830-1611311b4b64 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/morrowc/picam/proto/picam v0.0.0-00010101000000-000000000000 // indirect
+	github.com/rjeczalik/notify v0.9.2 // indirect
 	golang.org/x/net v0.0.0-20220516155154-20f960328961 // indirect
 	golang.org/x/sys v0.0.0-20220520151302-bc2c85ada10a // indirect
 	golang.org/x/text v0.3.7 // indirect
