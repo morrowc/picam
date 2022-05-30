@@ -1,0 +1,9 @@
+port: 9987
+client:{
+  id: "abc123"
+  store: "/tmp/store1"
+}
+client:{
+  id: "xyzpdq"
+  store: "/tmp/store2"
+}
