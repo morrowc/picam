@@ -17,6 +17,7 @@ service PiCam {
 message Request {
   string identifier = 1;
   bytes image = 2;
+  string filename = 3;
 }
 
 // Response returns only an error if one occurred.
