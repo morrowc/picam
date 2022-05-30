@@ -77,11 +77,12 @@ func (c *Client) Watcher() error {
 }
 
 // SendImage, Send an image to the remote server.
-func (c *Client) SendImage(ctx context.Context, img []byte) error {
+func (c *Client) SendImage(ctx context.Context, fn string, img []byte) error {
 	// Build a request and send it to the server.
 	req := &pgpb.Request{
 		Identifier: c.Id,
 		Image:      img,
+		Filename:   fn,
 	}
 
 	resp, err := c.client.SendImage(ctx, req)

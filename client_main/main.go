@@ -6,6 +6,7 @@ import (
 	"context"
 	"flag"
 	"os"
+	"path"
 	"sync"
 	"time"
 
@@ -62,7 +63,7 @@ func main() {
 				return
 			}
 			glog.Infof("Extracted file: %v which is %d bytes in size.", fn, len(img))
-			if err := c.SendImage(ctx, img); err != nil {
+			if err := c.SendImage(ctx, path.Base(fn), img); err != nil {
 				glog.Errorf("failed to send image: %v", err)
 				// return
 			}
