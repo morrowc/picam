@@ -17,6 +17,7 @@ fi
 for d in 1 2 3; do
   NAME=$(date '+capture-%Y-%m-%d-%H-%M-%S.jpg')
   ${CAM} -n -o ${STORAGE}/${NAME} >> /tmp/capture.log 2>&1
+  echo "Wrote ${STORAGE}/${NAME}" >> /tmp/capture.log
   sleep 15
 done
 
