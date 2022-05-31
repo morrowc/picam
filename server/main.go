@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path"
 	"sync"
 
 	"github.com/golang/glog"
@@ -43,8 +44,23 @@ func new(config *pb.Config) *server {
 func (s *server) SendImage(ctx context.Context, req *pb.Request) (*pb.Response, error) {
 	id := req.GetIdentifier()
 	img := req.GetImage()
-	glog.Infof("Got request from ID: %s img size: %d", id, len(img))
-	return &pb.Response{}, nil
+	fn := req.GetFilename()
+	glog.Infof("Got request from ID: %s file: %s img size: %d", id, fn, len(img))
+	// Store the image if possible, otherwise raise an error for unknown client id.
+	if d, ok := s.stores[id]; ok {
+		p := path.Join(d, fn)
+		if err := os.WriteFile(p, img, 0644); err != nil {
+			return &pb.Response{
+				Error: fmt.Sprintf("failed to write image(%s): %v", p, err),
+			}, err
+		}
+		return &pb.Response{}, nil
+	} else {
+		// No match from the id/store config, error.
+		return &pb.Response{
+			Error: fmt.Sprintf("client(%s) unknown", id),
+		}, fmt.Errorf("unknown client(%s)", id)
+	}
 }
 
 // readConfig reads the server configuration proto from disk.
@@ -81,14 +97,14 @@ func main() {
 		grpc.MaxSendMsgSize(maxMsgSize),
 	)
 
-	fmt.Printf("Will listen on port: %d\n", server.config.GetPort())
+	glog.Infof("Will listen on port: %d\n", server.config.GetPort())
 	for _, client := range server.config.GetClient() {
 		id := client.GetId()
 		dir := client.GetStore()
 		if _, err := os.Stat(dir); os.IsNotExist(err) {
 			glog.Fatalf("store: %s does not exist: %v", dir, err)
 		}
-		fmt.Printf("Id: %s store: %s\n", client.GetId(), client.GetStore())
+		glog.Infof("Id: %s store: %s\n", client.GetId(), client.GetStore())
 		server.mu.Lock()
 		server.stores[id] = dir
 		server.mu.Unlock()
