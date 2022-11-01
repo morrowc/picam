@@ -5,8 +5,7 @@ After=syslog.target network.target remote-fs.target nss-lookup.target
 [Service]
 Type=idle
 WorkingDirectory=/tmp
-ExecStart=/home/pi/scripts/git/picam/client_main/client -id 905fc767-d34f-46ff-97c6-2a93
-55df0869 -store /tmp/camstore -server docs.as701.net:9987
+ExecStart=/home/pi/scripts/git/picam/client_main/client -id 905fc767-d34f-46ff-97c6-2a9355df0869 -store /tmp/camstore -server docs.as701.net:9987
 Restart=on-failure
 LimitNOFILE=10000
 
