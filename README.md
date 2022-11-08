@@ -49,3 +49,9 @@ Actuation of the imager.sh is done through cron:
 
 The client_main runs at system startup from a systemd file, included in the client_main.
 The server process similarly runs at system startup on the server, using a systemd file.
+
+For oled display usage, make a cron entry that simply runs the oled.py script every hour.
+
+```shell
+0 * * * *  /home/pi/scripts/git/picam/client/oled.py >> /tmp/oled.log 2>&1
+```
