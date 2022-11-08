@@ -5,7 +5,7 @@ Raspberry Pi Camera image collector and processing server
 
 Collect images from a pi-camera on the pi, send those images
 to a remote server for storage. Maximum resolution for a
-Logitech QuickCam Pro is 800 x 600, the camera used, however,
+Logitech QuickCam Pro is 800 x 600, the camera software used, however,
 is not limited to the QuickCam Pro.
 
 # Dependencies
@@ -14,6 +14,11 @@ Software to install includes:
 
    * [golang](https://golang.org)
    * [grpc libraries](https://google.golang.org/grpc)
+   * python libraries
+      * apt-get install build-essential python3-pip python3-dev python3-smbus
+      * apt-get install python3-pil
+      * pip3 install Adafruit-Blinka
+      * pip3 install adafruit-circuitpython-ssd1306
 
 Hardware required:
 
