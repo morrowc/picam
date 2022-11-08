@@ -8,6 +8,8 @@ to a remote server for storage. Maximum resolution for a
 Logitech QuickCam Pro is 800 x 600, the camera software used,
 however, is not limited to the QuickCam Pro.
 
+To enable the oled screen, enable I2C in raspi-config.
+
 # Dependencies
 
 Software to install includes:
