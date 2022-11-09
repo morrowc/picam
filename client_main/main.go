@@ -65,12 +65,9 @@ func main() {
 			glog.Infof("Extracted file: %v which is %d bytes in size.", fn, len(img))
 			if err := c.SendImage(ctx, path.Base(fn), img); err != nil {
 				glog.Errorf("failed to send image: %v", err)
-				// return
 			}
 		}
 	}()
 	wg.Wait()
-
 	glog.Infof("Finished waiting for images, send: %d images.", c.ImgCount)
-
 }
