@@ -1,4 +1,4 @@
-name: RV
+name: PiCam-Actions
 on: ["push", "pull_request"]
 jobs:
 
