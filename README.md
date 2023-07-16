@@ -55,3 +55,5 @@ For oled display usage, make a cron entry that simply runs the oled.py script ev
 ```shell
 0 * * * *  /home/pi/scripts/git/picam/client/oled.py >> /tmp/oled.log 2>&1
 ```
+
+# Be good.
