@@ -11,7 +11,7 @@ require (
 	github.com/morrowc/picam/client/client v0.0.0-00010101000000-000000000000
 	github.com/morrowc/picam/proto/picam v0.0.0-00010101000000-000000000000
 	google.golang.org/grpc v1.56.3
-	google.golang.org/protobuf v1.30.0
+	google.golang.org/protobuf v1.33.0
 )
 
 require (
