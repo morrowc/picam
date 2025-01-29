@@ -7,7 +7,7 @@ replace github.com/morrowc/picam/proto/picam => ./proto
 replace github.com/morrowc/picam/client/client => ./client
 
 require (
-	github.com/golang/glog v1.1.0
+	github.com/golang/glog v1.2.4
 	github.com/morrowc/picam/client/client v0.0.0-00010101000000-000000000000
 	github.com/morrowc/picam/proto/picam v0.0.0-00010101000000-000000000000
 	google.golang.org/grpc v1.56.3
