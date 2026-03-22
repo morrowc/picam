@@ -25,11 +25,13 @@ Software to install includes:
 Hardware required:
 
    * [raspberry pi](https://www.raspberrypi.org) - Tested on at least pi4.
-   * [usb webcam](https://amzn.com/dp/B00006LIOM) - Tested, but probably any usb cam.
+   * [usb webcam](https://amzn.com/dp/B00006LIOM) - Tested, but probably any
+      usb cam.
 
 # Normal Operations
 
-Golang support to query the pi camera is not terrific, so for now, poll the camera with:
+Golang support to query the pi camera is not terrific, so for now, poll
+the camera with:
    
    * imager.sh
 
@@ -44,13 +46,16 @@ Actuation of the imager.sh is done through cron:
   # Run the image collection script.
   * * * * * /home/pi/scripts/git/picam/client/imager.sh >> /tmp/capture.log 2>&1
   # Remove stale/old images from the collection bin (/tmp/camstore)
-  1 * * * * find /tmp/camstore -type f -ctime +1 -exec rm {} \; >> /tmp/cleanup.log 2>&1 
+  1 * * * * find /tmp/camstore -type f -ctime +1 -exec rm {} \; >> /tmp/cleanup.log 2>&1
 ```
 
-The client_main runs at system startup from a systemd file, included in the client_main.
-The server process similarly runs at system startup on the server, using a systemd file.
+* The client_main runs at system startup from a systemd file,
+included in the client_main.
+* The server process similarly runs at system startup on the server,
+using a systemd file.
 
-For oled display usage, make a cron entry that simply runs the oled.py script every hour.
+For oled display usage, make a cron entry that simply runs the
+oled.py script every hour.
 
 ```shell
 0 * * * *  /home/pi/scripts/git/picam/client/oled.py >> /tmp/oled.log 2>&1
