@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/golang/glog"
-	pb "github.com/morrowc/picam/proto/picam"
+	pb "github.com/morrowc/picam/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/encoding/prototext"

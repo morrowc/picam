@@ -12,7 +12,7 @@ import (
 
 	"github.com/golang/glog"
 
-	"github.com/morrowc/picam/client/client"
+	"github.com/morrowc/picam/client"
 )
 
 var (

@@ -11,7 +11,7 @@ import (
 	"github.com/rjeczalik/notify"
 	"google.golang.org/grpc"
 
-	pgpb "github.com/morrowc/picam/proto/picam"
+	pgpb "github.com/morrowc/picam/proto"
 )
 
 const (

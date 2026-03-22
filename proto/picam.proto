@@ -4,7 +4,7 @@
 syntax = "proto3";
 package picam.proto;
 
-option go_package = "github.com/morrowc/picam/proto/picam";
+option go_package = "github.com/morrowc/picam/proto";
 
 // PiCam service exposes an interface to send an image
 // from the client to the server.
