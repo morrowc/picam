@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/golang/glog v1.2.5
 	github.com/rjeczalik/notify v0.9.3
-	google.golang.org/grpc v1.83.0
+	google.golang.org/grpc v1.83.2
 	google.golang.org/protobuf v1.36.12
 )
 
